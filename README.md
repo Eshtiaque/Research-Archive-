@@ -64,7 +64,7 @@ npm install
 ```
 Create a `.env` file in `research-assistant/` and add:
 - `VITE_CLERK_PUBLISHABLE_KEY=your_clerk_pub_key`
-- `VITE_API_URL=http://localhost:5000`
+- `VITE_API_URL=https://research-archive-rosy.vercel.app`
 
 Run the development server:
 ```bash

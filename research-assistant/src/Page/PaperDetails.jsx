@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom'; 
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useUser } from "@clerk/react";
 import toast, { Toaster } from 'react-hot-toast';
-import { 
-  FaArrowLeft, FaExternalLinkAlt, FaQuoteLeft, 
+import {
+  FaArrowLeft, FaExternalLinkAlt, FaQuoteLeft,
   FaDatabase, FaMicrochip, FaRegBookmark, FaFlask, FaRobot, FaTimes, FaPaperPlane, FaSpinner
 } from 'react-icons/fa';
 
 const PaperDetails = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation(); 
-  const { user } = useUser(); 
-  
+  const location = useLocation();
+  const { user } = useUser();
+
   const realMatchScore = location.state?.matchScore || 95;
 
   const [paper, setPaper] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [deepAnalysis, setDeepAnalysis] = useState({
     contributions: [],
@@ -62,25 +62,25 @@ const PaperDetails = () => {
           }
         }
 
-        const topConcepts = Array.isArray(work.concepts) && work.concepts.length > 0 
-            ? work.concepts.slice(0, 5).map(c => c.display_name) 
-            : ["Machine Learning", "Data Science"];
-        
-        
+        const topConcepts = Array.isArray(work.concepts) && work.concepts.length > 0
+          ? work.concepts.slice(0, 5).map(c => c.display_name)
+          : ["Machine Learning", "Data Science"];
+
+
         let journalName = "Unknown Source";
         const locationData = work.primary_location;
-        const doiString = work.doi || ""; 
+        const doiString = work.doi || "";
 
         if (locationData) {
           if (locationData.source && locationData.source.display_name) {
-            journalName = locationData.source.display_name; 
+            journalName = locationData.source.display_name;
           } else if (locationData.source && locationData.source.host_organization_name) {
-            journalName = locationData.source.host_organization_name; 
+            journalName = locationData.source.host_organization_name;
           } else if (locationData.landing_page_url) {
             try {
               const url = new URL(locationData.landing_page_url);
-              journalName = url.hostname.replace('www.', ''); 
-              
+              journalName = url.hostname.replace('www.', '');
+
               if (journalName === 'doi.org') {
                 if (doiString.includes('10.1109')) journalName = 'IEEE Xplore';
                 else if (doiString.includes('10.1145')) journalName = 'ACM Digital Library';
@@ -107,19 +107,19 @@ const PaperDetails = () => {
           year: work.publication_year?.toString() || "N/A",
           abstract: fullAbstract,
           citationCount: work.cited_by_count || 0,
-          journal: { name: journalName }, 
+          journal: { name: journalName },
           url: work.doi || work.id || "#",
-          dataset: extractedDataset || "No Extracted Dataset", 
+          dataset: extractedDataset || "No Extracted Dataset",
           hasDataset: extractedDataset !== null,
-          keywords: topConcepts, 
-          matchScore: realMatchScore, 
-          topConcept: topConcepts[0] 
+          keywords: topConcepts,
+          matchScore: realMatchScore,
+          topConcept: topConcepts[0]
         });
 
         if (fullAbstract && fullAbstract.length > 100) {
           generateDeepAnalysis(fullAbstract);
         } else {
-          setIsAnalyzing(false); 
+          setIsAnalyzing(false);
         }
 
       } catch (error) {
@@ -137,7 +137,7 @@ const PaperDetails = () => {
   const generateDeepAnalysis = async (abstractText) => {
     try {
       setIsAnalyzing(true);
-      const aiResponse = await axios.post('http://localhost:5000/api/papers/analyze-paper', {
+      const aiResponse = await axios.post('https://research-archive-rosy.vercel.app/api/papers/analyze-paper', {
         abstract: abstractText
       });
       if (aiResponse.data.success) {
@@ -161,13 +161,13 @@ const PaperDetails = () => {
         title: paper?.title || "Unknown Title",
         authors: paper?.authors?.map(a => a.name) || ["Unknown Author"],
         year: parseInt(paper?.year) || 0,
-        similarity: paper?.matchScore || 95, 
+        similarity: paper?.matchScore || 95,
         dataset: paper?.dataset !== "No Extracted Dataset" ? paper?.dataset : "Extracted by AI",
         hasDataset: paper?.hasDataset || false,
-        clerkId: user?.id 
+        clerkId: user?.id
       };
 
-      const response = await axios.post('http://localhost:5000/api/papers/save', paperData);
+      const response = await axios.post('https://research-archive-rosy.vercel.app/api/papers/save', paperData);
       if (response.data.success) toast.success('Saved to Workspace successfully!', { id: toastId });
     } catch (error) {
       if (error.response && error.response.status === 400) toast.error('Already in Workspace!', { id: toastId });
@@ -185,10 +185,10 @@ const PaperDetails = () => {
     setMessages(prev => [...prev, { role: 'ai', text: 'Analyzing context...' }]);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/chat', {
-        messages: newMessages.map(m => ({ 
-          role: m.role === 'ai' ? 'assistant' : 'user', 
-          content: m.text 
+      const response = await axios.post('https://research-archive-rosy.vercel.app/api/chat', {
+        messages: newMessages.map(m => ({
+          role: m.role === 'ai' ? 'assistant' : 'user',
+          content: m.text
         })),
         paperContext: {
           title: paper?.title || "Unknown Title",
@@ -213,16 +213,16 @@ const PaperDetails = () => {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans pb-24 selection:bg-slate-200 relative">
-      <Toaster position="bottom-right" /> 
-      
+      <Toaster position="bottom-right" />
+
       <div className="max-w-[1600px] w-full mx-auto px-6 mt-10 grid grid-cols-1 xl:grid-cols-12 gap-12 xl:gap-16 items-start">
-        
+
         {/* LEFT SIDE: MAIN CONTENT */}
         <div className="xl:col-span-8 space-y-12 xl:border-r border-slate-200 xl:pr-12">
-          
+
           <header className="flex gap-6 items-start">
-            <button 
-              onClick={() => navigate(-1)} 
+            <button
+              onClick={() => navigate(-1)}
               className="shrink-0 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-black bg-slate-50 hover:bg-slate-100 rounded-full transition-colors cursor-pointer mt-2"
             >
               <FaArrowLeft />
@@ -329,8 +329,8 @@ const PaperDetails = () => {
             <a href={paper?.url !== "#" ? paper?.url : `https://doi.org/${paper?.url}`} target="_blank" rel="noreferrer" className="w-full bg-slate-900 hover:bg-black text-white text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 py-4 transition-colors rounded-sm shadow-sm">
               Access Full Manuscript <FaExternalLinkAlt size={10} />
             </a>
-            
-            <button 
+
+            <button
               onClick={handleSaveToWorkspace}
               className="w-full bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 py-4 transition-colors rounded-sm border border-slate-200"
             >
@@ -400,7 +400,7 @@ const PaperDetails = () => {
       </div>
 
       {/* FLOATING AI CHAT ASSISTANT */}
-      <button 
+      <button
         onClick={() => setIsChatOpen(!isChatOpen)}
         className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 px-6 py-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95
           ${isChatOpen ? 'bg-red-500 text-white' : 'bg-slate-900 text-white'}
@@ -430,7 +430,7 @@ const PaperDetails = () => {
             ))}
           </div>
           <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-slate-200 flex gap-2">
-            <input 
+            <input
               type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)}
               placeholder="Query this manuscript..."
               className="flex-1 bg-slate-100 border-none px-4 py-3 rounded-full text-xs focus:ring-1 focus:ring-slate-900 outline-none"

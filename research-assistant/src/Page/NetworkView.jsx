@@ -2,15 +2,15 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ForceGraph2D from 'react-force-graph-2d';
 import axios from 'axios';
-import { useUser } from "@clerk/react"; 
+import { useUser } from "@clerk/react";
 import { FaArrowLeft, FaDatabase, FaFileAlt, FaProjectDiagram } from 'react-icons/fa';
 
 const NetworkGraph = () => {
   const navigate = useNavigate();
-  const { user, isLoaded } = useUser(); 
-  
+  const { user, isLoaded } = useUser();
+
   const fgRef = useRef();
-  const containerRef = useRef(null); 
+  const containerRef = useRef(null);
 
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ const NetworkGraph = () => {
   const [stats, setStats] = useState({ total: 0, datasets: 0 });
   const [rawPapers, setRawPapers] = useState([]);
   const [uniqueDatasets, setUniqueDatasets] = useState([]);
-  
+
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const NetworkGraph = () => {
 
     const fetchGraphContent = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/papers/saved?clerkId=${user.id}`);
+        const response = await axios.get(`https://research-archive-rosy.vercel.app/api/papers/saved?clerkId=${user.id}`);
 
         if (response.data.success) {
           const papers = response.data.data;
@@ -66,21 +66,21 @@ const NetworkGraph = () => {
               hasDataset: paper.hasDataset,
               datasetName: paper.dataset || "Extracted Dataset",
               val: 6,
-              color: '#64748b', 
+              color: '#64748b',
               type: 'paper'
             });
 
             if (paper.hasDataset) {
               const dsName = paper.dataset || "Extracted Dataset";
               const dsId = `dataset-${dsName.toLowerCase().replace(/\s+/g, '-')}`;
-              
+
               if (!datasetMap.has(dsId)) {
                 datasetMap.set(dsId, dsName);
                 nodes.push({
                   id: dsId,
                   name: dsName,
-                  val: 14, 
-                  color: '#2563eb', 
+                  val: 14,
+                  color: '#2563eb',
                   type: 'dataset'
                 });
               }
@@ -111,10 +111,10 @@ const NetworkGraph = () => {
   const handleNodeClick = useCallback(
     (node) => {
       if (!fgRef.current) return;
-      
-      fgRef.current.centerAt(node.x, node.y, 800); 
-      fgRef.current.zoom(4, 800); 
-      
+
+      fgRef.current.centerAt(node.x, node.y, 800);
+      fgRef.current.zoom(4, 800);
+
       setSelectedNode(node.type === 'paper' ? node : null);
     },
     [fgRef]
@@ -130,12 +130,12 @@ const NetworkGraph = () => {
   const drawNode = (node, ctx, globalScale) => {
     const isSelected = selectedNode && selectedNode.id === node.id;
     const isDataset = node.type === 'dataset';
-    
+
     ctx.beginPath();
     ctx.arc(node.x, node.y, node.val, 0, 2 * Math.PI, false);
     ctx.fillStyle = node.color;
     ctx.fill();
-    
+
     ctx.lineWidth = isSelected ? 4 / globalScale : 2 / globalScale;
     ctx.strokeStyle = isSelected ? '#0f172a' : '#ffffff';
     ctx.stroke();
@@ -146,27 +146,27 @@ const NetworkGraph = () => {
     if (showText) {
       const label = node.name;
       const fontSize = isDataset ? 14 / globalScale : 10 / globalScale;
-      
+
       ctx.font = `${isDataset ? 'bold' : '600'} ${fontSize}px Sans-Serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       ctx.fillStyle = isDataset ? '#1e3a8a' : '#475569';
-      
+
       const displayText = label.length > 25 ? label.substring(0, 25) + '...' : label;
-      
+
       ctx.fillText(displayText, node.x, node.y + node.val + (3 / globalScale));
     }
   };
 
   return (
     <div className="flex h-[calc(100vh-76px)] w-full overflow-hidden bg-white text-slate-900 font-sans selection:bg-slate-200">
-      
+
       {/* ── LEFT SIDEBAR ── */}
       <aside className="relative z-20 flex w-[480px] flex-shrink-0 flex-col border-r border-slate-200 bg-white shadow-xl">
         <div className="flex flex-col gap-6 p-8 pb-8 border-b border-slate-100 bg-slate-50">
           <div className="flex items-center gap-4">
-            <button 
-              onClick={() => navigate(-1)} 
+            <button
+              onClick={() => navigate(-1)}
               className="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-black bg-white border border-slate-200 hover:border-black rounded-full transition-colors cursor-pointer shadow-sm"
             >
               <FaArrowLeft size={16} />
@@ -201,7 +201,7 @@ const NetworkGraph = () => {
               </p>
               <div className="grid grid-cols-2 gap-3">
                 {uniqueDatasets.map((ds) => (
-                  <button 
+                  <button
                     key={ds.id}
                     onClick={() => focusOnNode(ds.id)}
                     className="text-left bg-white border border-slate-200 p-4 hover:border-blue-500 hover:shadow-md transition-all rounded-sm flex flex-col justify-center"
@@ -221,9 +221,9 @@ const NetworkGraph = () => {
             </p>
             <div className="grid grid-cols-2 gap-3">
               {rawPapers.map((paper) => {
-                 const actualId = paper.paperId || paper.id || paper._id;
-                 return (
-                  <button 
+                const actualId = paper.paperId || paper.id || paper._id;
+                return (
+                  <button
                     key={`p-${actualId}`}
                     onClick={() => focusOnNode(actualId)}
                     className="text-left text-sm font-medium text-slate-600 hover:text-black bg-slate-50 hover:bg-white border border-transparent hover:border-slate-300 p-3 rounded-sm transition-all line-clamp-3 leading-relaxed"
@@ -231,7 +231,7 @@ const NetworkGraph = () => {
                   >
                     {paper.title}
                   </button>
-                 )
+                )
               })}
             </div>
           </div>
@@ -240,17 +240,17 @@ const NetworkGraph = () => {
 
       {/* ── MIDDLE: 2D CANVAS AREA ── */}
       <main ref={containerRef} className="relative flex-1 overflow-hidden bg-white">
-        <div className="absolute inset-0 z-0 opacity-[0.05]" 
-             style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '30px 30px' }}>
+        <div className="absolute inset-0 z-0 opacity-[0.05]"
+          style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '30px 30px' }}>
         </div>
 
         {loading ? (
           <div className="flex h-full w-full flex-col items-center justify-center z-10 relative">
-             <div className="w-20 h-20 border-2 border-slate-900 bg-slate-50 flex items-center justify-center mb-6 relative">
-                <div className="absolute w-full h-full border border-slate-300 animate-ping opacity-20"></div>
-                <div className="w-6 h-6 bg-black animate-spin"></div>
-             </div>
-             <p className="text-sm font-bold text-black uppercase tracking-widest mb-1">Mapping Topologies...</p>
+            <div className="w-20 h-20 border-2 border-slate-900 bg-slate-50 flex items-center justify-center mb-6 relative">
+              <div className="absolute w-full h-full border border-slate-300 animate-ping opacity-20"></div>
+              <div className="w-6 h-6 bg-black animate-spin"></div>
+            </div>
+            <p className="text-sm font-bold text-black uppercase tracking-widest mb-1">Mapping Topologies...</p>
           </div>
         ) : (
           <div className="absolute inset-0 z-10 cursor-grab active:cursor-grabbing">
@@ -307,14 +307,14 @@ const NetworkGraph = () => {
               <h3 className="font-serif text-2xl font-normal text-black mb-4 leading-snug">
                 {selectedNode.name}
               </h3>
-              
+
               <p className="text-sm text-slate-600 mb-8 font-medium leading-relaxed border-l-2 border-slate-200 pl-4">
                 {selectedNode.authors}
               </p>
 
               {selectedNode.hasDataset && (
                 <div className="mb-8 flex items-center gap-2 text-xs font-bold text-slate-700 bg-blue-50 border border-blue-100 px-3 py-2 rounded-sm w-fit uppercase tracking-wider">
-                   <FaDatabase /> {selectedNode.datasetName || "Verified Dataset"}
+                  <FaDatabase /> {selectedNode.datasetName || "Verified Dataset"}
                 </div>
               )}
 

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser, useClerk } from "@clerk/react";
 import axios from 'axios';
-import { 
-  FaUser, FaCrown, FaKey, FaChartLine, FaShieldAlt, 
+import {
+  FaUser, FaCrown, FaKey, FaChartLine, FaShieldAlt,
   FaArrowRight, FaExclamationCircle, FaCheckCircle, FaSignOutAlt
 } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
@@ -11,22 +11,22 @@ import toast, { Toaster } from 'react-hot-toast';
 const Settings = () => {
   const navigate = useNavigate();
   const { user, isLoaded } = useUser();
-  const { signOut } = useClerk(); 
-  const [activeTab, setActiveTab] = useState('usage'); 
+  const { signOut } = useClerk();
+  const [activeTab, setActiveTab] = useState('usage');
 
   const [usageStats, setUsageStats] = useState({
     searchLimit: 20,
     searchUsed: 0,
     reviewLimit: 5,
     reviewUsed: 0,
-    plan: 'Loading...' 
+    plan: 'Loading...'
   });
 
   useEffect(() => {
     if (user?.id) {
       const fetchUserQuota = async () => {
         try {
-          const response = await axios.get(`http://localhost:5000/api/user/quota/${user.id}`);
+          const response = await axios.get(`https://research-archive-rosy.vercel.app/api/user/quota/${user.id}`);
           if (response.data.success) {
             const data = response.data.data;
             setUsageStats({
@@ -60,12 +60,12 @@ const Settings = () => {
   return (
     <div className="min-h-[calc(100vh-76px)] bg-slate-50 text-slate-900 font-sans pb-24 relative">
       <Toaster position="bottom-right" />
-      
+
       {/* Background Grid Pattern */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
 
       <div className="max-w-[1200px] mx-auto px-6 pt-12 relative z-10">
-        
+
         {/* --- HEADER --- */}
         <div className="mb-12">
           <h1 className="font-serif text-4xl font-normal text-black mb-2">Account Settings</h1>
@@ -73,7 +73,7 @@ const Settings = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
+
           {/* --- LEFT: SIDEBAR NAVIGATION --- */}
           <aside className="lg:col-span-3 space-y-2">
             {[
@@ -95,18 +95,18 @@ const Settings = () => {
             ))}
 
             <div className="pt-4 mt-4 border-t border-slate-200">
-               <button 
-                  onClick={() => signOut(() => navigate('/'))}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all rounded-sm text-red-600 hover:bg-red-50"
-               >
-                  <FaSignOutAlt /> Sign Out
-               </button>
+              <button
+                onClick={() => signOut(() => navigate('/'))}
+                className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all rounded-sm text-red-600 hover:bg-red-50"
+              >
+                <FaSignOutAlt /> Sign Out
+              </button>
             </div>
           </aside>
 
           {/* --- RIGHT: CONTENT PANEL --- */}
           <div className="lg:col-span-9 bg-white border border-slate-300 p-8 md:p-10 shadow-sm min-h-[500px]">
-            
+
             {/* 1. Profile Tab */}
             {activeTab === 'profile' && (
               <div className="animate-in fade-in duration-300">
@@ -117,7 +117,7 @@ const Settings = () => {
                     <h3 className="text-xl font-bold text-black">{user?.fullName || "Scholar Name"}</h3>
                     <p className="text-sm text-slate-500 mb-2">{user?.primaryEmailAddress?.emailAddress}</p>
                     <span className="text-[10px] bg-slate-900 text-white px-2 py-1 uppercase tracking-widest font-bold rounded-sm">
-                        {usageStats.plan}
+                      {usageStats.plan}
                     </span>
                   </div>
                 </div>
@@ -138,30 +138,30 @@ const Settings = () => {
             {activeTab === 'usage' && (
               <div className="animate-in fade-in duration-300 space-y-10">
                 <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-8">
-                   <h2 className="text-lg font-serif">Compute & Quota Usage</h2>
-                   <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-1 uppercase tracking-widest rounded-sm">
-                      {usageStats.plan} Plan
-                   </span>
+                  <h2 className="text-lg font-serif">Compute & Quota Usage</h2>
+                  <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-1 uppercase tracking-widest rounded-sm">
+                    {usageStats.plan} Plan
+                  </span>
                 </div>
-                
+
                 {/* Search Limit */}
                 <div className="space-y-4">
                   <div className="flex justify-between items-end">
                     <div className="text-xs font-bold uppercase tracking-widest text-slate-700">AI Literature Searches</div>
                     <div className="text-sm font-mono font-bold text-slate-900">
-                        {usageStats.searchUsed} <span className="text-slate-400">/ {usageStats.searchLimit}</span>
+                      {usageStats.searchUsed} <span className="text-slate-400">/ {usageStats.searchLimit}</span>
                     </div>
                   </div>
                   <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                    <div 
-                       className={`h-full transition-all duration-1000 ${searchPercentage >= 100 ? 'bg-red-500' : 'bg-slate-900'}`} 
-                       style={{ width: `${Math.min(searchPercentage, 100)}%` }}
+                    <div
+                      className={`h-full transition-all duration-1000 ${searchPercentage >= 100 ? 'bg-red-500' : 'bg-slate-900'}`}
+                      style={{ width: `${Math.min(searchPercentage, 100)}%` }}
                     ></div>
                   </div>
                   {searchPercentage >= 100 ? (
-                     <p className="text-[10px] text-red-600 font-bold tracking-wide uppercase">Quota exhausted. Upgrade for more capacity.</p>
+                    <p className="text-[10px] text-red-600 font-bold tracking-wide uppercase">Quota exhausted. Upgrade for more capacity.</p>
                   ) : (
-                     <p className="text-[10px] text-slate-400 font-medium tracking-wide italic text-right">Usage tracks your real-time API calls</p>
+                    <p className="text-[10px] text-slate-400 font-medium tracking-wide italic text-right">Usage tracks your real-time API calls</p>
                   )}
                 </div>
 
@@ -170,13 +170,13 @@ const Settings = () => {
                   <div className="flex justify-between items-end">
                     <div className="text-xs font-bold uppercase tracking-widest text-slate-700">Literature Syntheses</div>
                     <div className="text-sm font-mono font-bold text-slate-900">
-                        {usageStats.reviewUsed} <span className="text-slate-400">/ {usageStats.reviewLimit}</span>
+                      {usageStats.reviewUsed} <span className="text-slate-400">/ {usageStats.reviewLimit}</span>
                     </div>
                   </div>
                   <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                    <div 
-                       className={`h-full transition-all duration-1000 ${reviewPercentage >= 100 ? 'bg-red-500' : 'bg-blue-600'}`} 
-                       style={{ width: `${Math.min(reviewPercentage, 100)}%` }}
+                    <div
+                      className={`h-full transition-all duration-1000 ${reviewPercentage >= 100 ? 'bg-red-500' : 'bg-blue-600'}`}
+                      style={{ width: `${Math.min(reviewPercentage, 100)}%` }}
                     ></div>
                   </div>
                 </div>
@@ -184,13 +184,13 @@ const Settings = () => {
                 {/* Upgrade Promo (Show only if Basic) */}
                 {usageStats.plan === 'Basic Scholar' && (
                   <div className="mt-8 bg-slate-50 border border-slate-200 p-6 flex flex-col md:flex-row items-center justify-between gap-4 rounded-sm">
-                      <div>
-                        <h4 className="font-serif text-lg text-black mb-1">Scale your research?</h4>
-                        <p className="text-xs text-slate-500 font-medium">Pro plans offer up to 500 searches and deep graph analysis.</p>
-                      </div>
-                      <button onClick={() => navigate('/pricing')} className="px-6 py-3 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-black transition-colors whitespace-nowrap rounded-sm">
-                        View Pricing
-                      </button>
+                    <div>
+                      <h4 className="font-serif text-lg text-black mb-1">Scale your research?</h4>
+                      <p className="text-xs text-slate-500 font-medium">Pro plans offer up to 500 searches and deep graph analysis.</p>
+                    </div>
+                    <button onClick={() => navigate('/pricing')} className="px-6 py-3 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-black transition-colors whitespace-nowrap rounded-sm">
+                      View Pricing
+                    </button>
                   </div>
                 )}
               </div>
@@ -208,7 +208,7 @@ const Settings = () => {
                   </div>
                   {usageStats.plan === 'Basic Scholar' && (
                     <button onClick={() => navigate('/pricing')} className="px-6 py-3 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-black transition-colors rounded-sm">
-                        Upgrade Tier
+                      Upgrade Tier
                     </button>
                   )}
                 </div>
@@ -226,26 +226,26 @@ const Settings = () => {
               <div className="animate-in fade-in duration-300">
                 <h2 className="text-lg font-serif border-b border-slate-200 pb-4 mb-8">Developer API Access</h2>
                 <div className="p-12 text-center border-2 border-dashed border-slate-200 bg-slate-50 rounded-sm">
-                   <FaKey className="mx-auto text-slate-300 text-4xl mb-4" />
-                   <h3 className="text-sm font-bold uppercase tracking-widest mb-2">API Keys Restricted</h3>
-                   <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed mb-6">
-                     API access is restricted to Institutional tiers only. Build powerful research applications with our endpoint.
-                   </p>
-                   <button onClick={() => navigate('/pricing')} className="text-[10px] font-bold text-black border-b-2 border-black pb-1 hover:text-slate-600 transition-colors uppercase tracking-widest">
-                     Explore Developer Plans <FaArrowRight className="inline ml-1" />
-                   </button>
+                  <FaKey className="mx-auto text-slate-300 text-4xl mb-4" />
+                  <h3 className="text-sm font-bold uppercase tracking-widest mb-2">API Keys Restricted</h3>
+                  <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed mb-6">
+                    API access is restricted to Institutional tiers only. Build powerful research applications with our endpoint.
+                  </p>
+                  <button onClick={() => navigate('/pricing')} className="text-[10px] font-bold text-black border-b-2 border-black pb-1 hover:text-slate-600 transition-colors uppercase tracking-widest">
+                    Explore Developer Plans <FaArrowRight className="inline ml-1" />
+                  </button>
                 </div>
               </div>
             )}
-            
+
             {/* 5. Security Tab */}
             {activeTab === 'security' && (
               <div className="animate-in fade-in duration-300">
-                 <h2 className="text-lg font-serif border-b border-slate-200 pb-4 mb-8">Account Security</h2>
-                 <p className="text-sm text-slate-500 mb-6">Your authentication and data security are managed by Clerk and MongoDB encryption.</p>
-                 <button className="px-6 py-3 bg-white border border-slate-300 text-slate-700 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 transition-colors rounded-sm">
-                    Manage Auth Credentials
-                 </button>
+                <h2 className="text-lg font-serif border-b border-slate-200 pb-4 mb-8">Account Security</h2>
+                <p className="text-sm text-slate-500 mb-6">Your authentication and data security are managed by Clerk and MongoDB encryption.</p>
+                <button className="px-6 py-3 bg-white border border-slate-300 text-slate-700 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 transition-colors rounded-sm">
+                  Manage Auth Credentials
+                </button>
               </div>
             )}
 

@@ -16,7 +16,7 @@ const Pricing = () => {
     const fetchUserPlan = async () => {
       if (isLoaded && user) {
         try {
-          const response = await axios.post('http://localhost:5000/api/user/sync', {
+          const response = await axios.post('https://research-archive-rosy.vercel.app/api/user/sync', {
             clerkId: user.id,
             name: user.fullName || "User",
             email: user.primaryEmailAddress?.emailAddress
@@ -46,7 +46,7 @@ const Pricing = () => {
     const toastId = toast.loading("Connecting to secure payment gateway...");
 
     try {
-      const response = await axios.post('http://localhost:5000/api/payment/create-checkout-session', {
+      const response = await axios.post('https://research-archive-rosy.vercel.app/api/payment/create-checkout-session', {
         clerkId: user.id,
         planName: planName,
         price: price
@@ -54,7 +54,7 @@ const Pricing = () => {
 
       if (response.data.success && response.data.url) {
         toast.success("Redirecting to Stripe...", { id: toastId });
-        window.location.href = response.data.url; 
+        window.location.href = response.data.url;
       }
     } catch (error) {
       console.error("Payment Error:", error);
@@ -66,7 +66,7 @@ const Pricing = () => {
   return (
     <div className="flex-1 mt-10 bg-slate-50 font-sans flex flex-col justify-center px-6 selection:bg-slate-200 pb-24">
       <Toaster position="bottom-right" />
-      
+
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto mb-16">
         <h2 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Access Tiers</h2>
@@ -80,7 +80,7 @@ const Pricing = () => {
 
       {/* Pricing Grid */}
       <div className="max-w-[1200px] w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        
+
         {/* --- 1. FREE PLAN --- */}
         <div className="bg-white border border-slate-300 p-8 flex flex-col relative opacity-90 hover:opacity-100 transition-opacity">
           <div className="absolute top-0 right-0 bg-slate-200 text-slate-700 text-[10px] font-bold uppercase tracking-widest px-3 py-1 m-4">
@@ -94,14 +94,14 @@ const Pricing = () => {
           <p className="text-sm text-slate-600 mb-8 font-medium">
             Essential tools for students and independent researchers to begin literature analysis.
           </p>
-          
+
           <ul className="space-y-4 mb-10 flex-1">
             <li className="flex items-start gap-3 text-sm text-slate-700 font-medium"><FaCheck className="text-slate-400 mt-1 shrink-0" /> Up to 20 AI searches per month</li>
             <li className="flex items-start gap-3 text-sm text-slate-700 font-medium"><FaCheck className="text-slate-400 mt-1 shrink-0" /> 5 Synthesized Reviews per month</li>
             <li className="flex items-start gap-3 text-sm text-slate-700 font-medium"><FaCheck className="text-slate-400 mt-1 shrink-0" /> Basic Metadata Extraction</li>
           </ul>
 
-          <button 
+          <button
             onClick={() => navigate('/dashboard')}
             className="w-full py-4 bg-white hover:bg-slate-50 text-slate-900 text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-slate-300"
           >
@@ -115,17 +115,17 @@ const Pricing = () => {
             Recommended
           </div>
           <h3 className="text-xl font-bold text-slate-800 uppercase tracking-wider mb-2">Pro Researcher</h3>
-          
+
           <div className="flex items-baseline gap-1 mb-6">
             <span className="text-4xl font-serif text-slate-400 line-through decoration-slate-300">$15</span>
             <span className="text-4xl font-serif text-black">$12</span>
             <span className="text-slate-500 text-sm font-medium">/ month</span>
           </div>
-          
+
           <p className="text-sm text-slate-600 mb-8 font-medium">
             Advanced capabilities including topological graphs and deep AI synthesis.
           </p>
-          
+
           <ul className="space-y-4 mb-10 flex-1">
             <li className="flex items-start gap-3 text-sm text-slate-800 font-medium"><FaCheck className="text-blue-600 mt-1 shrink-0" /> 500 AI searches per month</li>
             <li className="flex items-start gap-3 text-sm text-slate-800 font-medium"><FaCheck className="text-blue-600 mt-1 shrink-0" /> 50 Synthesized Reviews</li>
@@ -133,14 +133,14 @@ const Pricing = () => {
           </ul>
 
           {currentPlan === 'Pro Researcher' ? (
-            <button 
+            <button
               onClick={() => navigate('/dashboard')}
               className="w-full py-4 bg-green-600 hover:bg-green-700 text-white text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-green-600"
             >
               <FaCheck size={12} /> Active Plan - Go to Workspace
             </button>
           ) : (
-            <button 
+            <button
               onClick={() => handleUpgrade('Pro Researcher', 12)}
               disabled={loading || fetchingPlan}
               className="w-full py-4 bg-slate-900 hover:bg-black text-white text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-slate-900 disabled:opacity-70 disabled:cursor-wait"
@@ -167,7 +167,7 @@ const Pricing = () => {
           <p className="text-sm text-slate-600 mb-8 font-medium">
             Full API access and collaborative features for university labs and teams.
           </p>
-          
+
           <ul className="space-y-4 mb-10 flex-1 opacity-70">
             <li className="flex items-start gap-3 text-sm text-slate-600 font-medium"><FaCheck className="text-slate-400 mt-1 shrink-0" /> Unlimited AI searches</li>
             <li className="flex items-start gap-3 text-sm text-slate-600 font-medium"><FaCheck className="text-slate-400 mt-1 shrink-0" /> Dedicated API Access</li>

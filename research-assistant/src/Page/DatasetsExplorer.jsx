@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useUser } from '@clerk/react'; 
-import { 
-  FaArrowLeft, FaDatabase, FaSearch, FaLink, FaLayerGroup, FaFileAlt, FaSpinner, FaExternalLinkAlt, FaProjectDiagram 
+import { useUser } from '@clerk/react';
+import {
+  FaArrowLeft, FaDatabase, FaSearch, FaLink, FaLayerGroup, FaFileAlt, FaSpinner, FaExternalLinkAlt, FaProjectDiagram
 } from 'react-icons/fa';
 
 const DatasetsExplorer = () => {
   const navigate = useNavigate();
   const { user } = useUser();
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [datasets, setDatasets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,7 @@ const DatasetsExplorer = () => {
     const fetchDatasets = async () => {
       if (!user?.id) return;
       try {
-        const response = await axios.get(`http://localhost:5000/api/papers/saved?clerkId=${user.id}`);
+        const response = await axios.get(`https://research-archive-rosy.vercel.app/api/papers/saved?clerkId=${user.id}`);
         if (response.data.success) {
           const savedPapers = response.data.data;
           const papersWithDatasets = savedPapers.filter(paper => paper.hasDataset);
@@ -32,7 +32,7 @@ const DatasetsExplorer = () => {
                 name: dsName,
                 description: `Dataset referenced across multiple saved manuscripts in your workspace.`,
                 category: "Research Data",
-                papers: [] 
+                papers: []
               };
             }
             acc[dsName].papers.push({
@@ -54,23 +54,23 @@ const DatasetsExplorer = () => {
     fetchDatasets();
   }, [user?.id]);
 
-  const filteredDatasets = datasets.filter(ds => 
-    ds.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredDatasets = datasets.filter(ds =>
+    ds.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     ds.papers.some(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
     <div className="h-[calc(100vh-76px)] overflow-hidden bg-slate-50 text-slate-900 font-sans flex flex-col">
-      
+
       {/* ========================================== */}
       {/* --- HEADER --- */}
       {/* ========================================== */}
       <div className="bg-white border-b border-slate-300 shrink-0">
         <div className="w-full px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-6">
-          
+
           <div className="w-full md:w-1/3 text-center md:text-left flex flex-col items-start">
-            <button 
-              onClick={() => navigate(-1)} 
+            <button
+              onClick={() => navigate(-1)}
               className="flex items-center gap-2 text-slate-400 hover:text-black text-md font-bold uppercase tracking-widest mb-2 transition-colors"
             >
               <FaArrowLeft className='text-sm font-serif' /> Back
@@ -83,8 +83,8 @@ const DatasetsExplorer = () => {
           <div className="w-full md:w-1/3 flex justify-center">
             <div className="w-full max-w-md relative">
               <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Search datasets..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -94,18 +94,18 @@ const DatasetsExplorer = () => {
           </div>
 
           <div className="w-full md:w-1/3 hidden md:flex justify-end items-center">
-             <div className="text-right">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Found</p>
-                <p className="font-mono font-bold text-lg text-black">{filteredDatasets.length}</p>
-             </div>
+            <div className="text-right">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Found</p>
+              <p className="font-mono font-bold text-lg text-black">{filteredDatasets.length}</p>
+            </div>
           </div>
 
         </div>
       </div>
 
-     
+
       <div className="flex-1 flex min-h-0">
-        
+
         <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
           <div className="max-w-[1200px] mx-auto">
             {loading ? (
@@ -117,12 +117,11 @@ const DatasetsExplorer = () => {
               <>
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
                   {filteredDatasets.map((ds) => (
-                    <div 
-                      key={ds.id} 
-                      className={`bg-white border p-6 transition-all group flex flex-col cursor-pointer ${
-                        selectedDataset?.name === ds.name ? 'border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] -translate-y-1' : 'border-slate-200 hover:border-slate-400'
-                      }`}
-                      onClick={() => setSelectedDataset(ds)} 
+                    <div
+                      key={ds.id}
+                      className={`bg-white border p-6 transition-all group flex flex-col cursor-pointer ${selectedDataset?.name === ds.name ? 'border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] -translate-y-1' : 'border-slate-200 hover:border-slate-400'
+                        }`}
+                      onClick={() => setSelectedDataset(ds)}
                     >
                       <div className="flex justify-between items-start mb-4">
                         <div className="p-2 bg-slate-50 text-slate-900 rounded-sm">
@@ -136,7 +135,7 @@ const DatasetsExplorer = () => {
                       <h3 className="font-serif text-lg font-bold text-black mb-2 group-hover:text-blue-600 transition-colors">
                         {ds.name}
                       </h3>
-                      
+
                       <p className="text-xs text-slate-500 leading-relaxed mb-6 flex-1">
                         {ds.description}
                       </p>
@@ -148,11 +147,10 @@ const DatasetsExplorer = () => {
                             {ds.papers.length} Papers
                           </span>
                         </div>
-                        
-                        <button 
-                          className={`text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all px-3 py-1.5 ${
-                            selectedDataset?.name === ds.name ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
-                          }`}
+
+                        <button
+                          className={`text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all px-3 py-1.5 ${selectedDataset?.name === ds.name ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
+                            }`}
                         >
                           Connections <FaLink />
                         </button>
@@ -173,7 +171,7 @@ const DatasetsExplorer = () => {
         </div>
 
         <div className="w-[350px] lg:w-[400px] shrink-0 bg-white border-l border-slate-200 flex flex-col shadow-[-4px_0_15px_-10px_rgba(0,0,0,0.05)] z-10">
-          
+
           {!selectedDataset ? (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-slate-50/50">
               <FaProjectDiagram className="text-5xl text-slate-200 mb-6" />
@@ -183,7 +181,7 @@ const DatasetsExplorer = () => {
               </p>
             </div>
           ) : (
-           
+
             <>
               <div className="bg-slate-900 p-6 shrink-0 shadow-md z-10">
                 <div className="text-[9px] font-bold text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
@@ -207,7 +205,7 @@ const DatasetsExplorer = () => {
                     <h3 className="font-serif text-sm font-medium text-slate-900 mb-3 leading-snug pr-4">
                       {paper.title}
                     </h3>
-                    <button 
+                    <button
                       onClick={() => navigate(`/paper/${paper.id}`)}
                       className="text-[9px] font-bold text-blue-600 uppercase tracking-widest flex items-center gap-1.5 hover:text-blue-800 transition-colors"
                     >
@@ -216,11 +214,11 @@ const DatasetsExplorer = () => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="p-4 border-t border-slate-200 bg-white shrink-0">
-                 <p className="text-[10px] text-slate-500 text-center font-medium">
-                   Access detailed AI analysis via manuscript profiles.
-                 </p>
+                <p className="text-[10px] text-slate-500 text-center font-medium">
+                  Access detailed AI analysis via manuscript profiles.
+                </p>
               </div>
             </>
           )}
